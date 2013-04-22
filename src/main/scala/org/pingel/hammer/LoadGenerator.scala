@@ -4,5 +4,6 @@ import scala.concurrent.Future
 
 trait LoadGenerator {
   
-  def makeNextRequest(): Future[String]
+  def makeNextRequest(id: Long): Future[String]
+  
 }

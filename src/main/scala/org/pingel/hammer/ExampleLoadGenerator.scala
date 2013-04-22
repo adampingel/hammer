@@ -2,6 +2,7 @@ package org.pingel.hammer
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import util.Random.nextInt
 
 class ExampleLoadGenerator extends LoadGenerator {
 
@@ -13,8 +14,10 @@ class ExampleLoadGenerator extends LoadGenerator {
     url("http://www.cnn.com/")
   )
 
-  def randomRequestBuilder() = requestBuilders(util.Random.nextInt(requestBuilders.size))
+  def randomRequestBuilder() = requestBuilders(nextInt(requestBuilders.size))
 
-  def makeNextRequest() = Http(randomRequestBuilder() OK as.String)
+  def makeNextRequest(id: Long) = {
+    Http(randomRequestBuilder() OK as.String)
+  }
 
 }
