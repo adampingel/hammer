@@ -39,3 +39,5 @@ Hammer statistics
   Average # requests completed per second: 0.9971580994166626
   Total # requests: 21
 ```
+
+To repeat this output, clone this repository and do `sbt run`.
