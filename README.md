@@ -18,11 +18,7 @@ val hammerActor = system.actorOf(Props(new HammerActor(lg, rps)))
 
 hammerActor ! HammerProtocol.Start(Some(duration))
 
-system.scheduler.schedule(
-  0.millis,
-  5.seconds,
-  hammerActor,
-  HammerProtocol.PrintStatistics())
+system.scheduler.schedule(0.millis, 5.seconds, hammerActor, HammerProtocol.PrintStatistics())
 ```
 
 Example output:
