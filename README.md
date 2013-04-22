@@ -28,6 +28,7 @@ Hammer.scala defines a main that demonstrates this code's usage:
 Example output:
 
 ```
+[...]
 [INFO] [04/22/2013 01:49:10.705] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] request 15 completed after 93 milliseconds
 [INFO] [04/22/2013 01:49:11.711] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] request 16 completed after 100 milliseconds
 [INFO] [04/22/2013 01:49:12.717] [HammerSystem-akka.actor.default-dispatcher-2] [akka://HammerSystem/user/$a] request 17 completed after 106 milliseconds
