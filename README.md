@@ -16,5 +16,5 @@ hammerActor ! HammerProtocol.Start(Some(duration))
 ```
 
 See the ExampleLoadGenerator.scala, which uses the
-(Dispatch)[http://dispatch.databinder.net/Dispatch.html] library to make asynchronous
+[Dispatch](http://dispatch.databinder.net/Dispatch.html) library to make asynchronous
 HTTP requests.
