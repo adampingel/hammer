@@ -8,21 +8,21 @@ HTTP requests.
 Hammer.scala defines a main that demonstrates this code's usage:
 
 ```scala
-    val rps = 1 // one request per second
-    val duration = 20.seconds
-    val lg = new ExampleLoadGenerator()
+val rps = 1 // one request per second
+val duration = 20.seconds
+val lg = new ExampleLoadGenerator()
 
-    val system = ActorSystem("HammerSystem")
+val system = ActorSystem("HammerSystem")
 
-    val hammerActor = system.actorOf(Props(new HammerActor(lg, rps)))
+val hammerActor = system.actorOf(Props(new HammerActor(lg, rps)))
 
-    hammerActor ! HammerProtocol.Start(Some(duration))
+hammerActor ! HammerProtocol.Start(Some(duration))
 
-    system.scheduler.schedule(
-      0.millis,
-      5.seconds,
-      hammerActor,
-      HammerProtocol.PrintStatistics())
+system.scheduler.schedule(
+  0.millis,
+  5.seconds,
+  hammerActor,
+  HammerProtocol.PrintStatistics())
 ```
 
 Example output:
