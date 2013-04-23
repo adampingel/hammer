@@ -12,7 +12,7 @@ resolvers += "sonatype snapshots" at "https://oss.sonatype.org/content/repositor
 
 libraryDependencies ++= Seq(
   "net.databinder.dispatch" %% "dispatch-core" % "0.10.0",
-  "com.typesafe.akka" %% "akka-actor" % "2.2-M2",
-  "com.typesafe.akka" %% "akka-agent" % "2.2-M2",
+  "com.typesafe.akka" %% "akka-actor" % "2.2-M3",
+  "com.typesafe.akka" %% "akka-agent" % "2.2-M3",
   "org.pingel" %% "axle" % "0.1-SNAPSHOT"
 )
