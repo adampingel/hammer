@@ -10,8 +10,8 @@ class ExampleLoadGenerator extends LoadGenerator {
 
   val requestBuilders = Vector(
     url("http://api.hostip.info/get_json.php"),
-    url("http://api.hostip.info/country.php"),
-    url("http://www.cnn.com/")
+    url("http://api.hostip.info/country.php")
+    //url("http://www.cnn.com/")
   )
 
   def randomRequestBuilder() = requestBuilders(nextInt(requestBuilders.size))

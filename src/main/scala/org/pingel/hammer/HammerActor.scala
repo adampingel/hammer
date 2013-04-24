@@ -2,16 +2,17 @@ package org.pingel.hammer
 
 import akka.actor.Cancellable
 import akka.actor.Actor
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.ActorLogging
+import concurrent.duration._
+import concurrent.ExecutionContext.Implicits.global
 
-class HammerActor(lg: LoadGenerator, targetRps: Double) extends Actor with ActorLogging {
+class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
   import HammerProtocol._
 
   var requestSchedule: Option[Cancellable] = None
 
+  var targetRps = 0d
   var startTime = 0L
   var requestId = 0L
   val startTimes = collection.mutable.Map.empty[Long, Long]
@@ -27,22 +28,27 @@ class HammerActor(lg: LoadGenerator, targetRps: Double) extends Actor with Actor
     val startRateAverage = startTimes.size / secondsUp
     val completeRateAverage = completionTimes.size / secondsUp
 
-    Statistics(now, targetRps, startRateAverage, completeRateAverage, requestId)
+    Statistics(now, targetRps, startRateAverage, completeRateAverage, requestId, startTimes.size - completionTimes.size)
   }
 
   def receive = {
 
-    case Start(stopAfter) => {
+    case TargetRPS(target) => {
+
+      targetRps = target
 
       startTime = System.currentTimeMillis()
 
-      requestSchedule = Some(context.system.scheduler.schedule(
-        0.millis,
-        (1 / targetRps).seconds,
-        self,
-        StartNextRequest()))
-
-      stopAfter map { context.system.scheduler.schedule(_, 0.seconds, self, Stop()) }
+      if (targetRps > 0) {
+        requestSchedule = Some(context.system.scheduler.schedule(
+          0.millis,
+          (1 / targetRps).seconds,
+          self,
+          StartNextRequest()))
+      } else {
+        requestSchedule.map(_.cancel)
+        requestSchedule = None
+      }
 
     }
 
@@ -62,12 +68,6 @@ class HammerActor(lg: LoadGenerator, targetRps: Double) extends Actor with Actor
       completionTimes += requestId -> time
       val ms = time - startTimes(requestId)
       log.info(s"request $requestId completed after $ms milliseconds")
-    }
-
-    case Stop() => {
-      requestSchedule.map(_.cancel)
-      requestSchedule = None
-      context.system.shutdown
     }
 
     case GetStatistics() => sender ! stats()
