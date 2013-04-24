@@ -13,7 +13,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
   var requestSchedule: Option[Cancellable] = None
 
   var targetRps = 0d
-  var startTime = 0L
+  val startTime = System.currentTimeMillis()
   var requestId = 0L
   val startTimes = collection.mutable.Map.empty[Long, Long]
   val completionTimes = collection.mutable.Map.empty[Long, Long]
@@ -36,8 +36,6 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     case TargetRPS(target) => {
 
       targetRps = target
-
-      startTime = System.currentTimeMillis()
 
       if (targetRps > 0) {
         requestSchedule = Some(context.system.scheduler.schedule(

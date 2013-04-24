@@ -27,7 +27,7 @@ class Visualization(hammerActor: ActorRef) {
   val refreshFn = (previous: List[(String, immutable.TreeMap[DateTime, Double])]) => {
 
     val statsFuture = (hammerActor ? HammerProtocol.GetStatistics()).mapTo[Statistics]
-    val stats = Await.result(statsFuture, 40.milliseconds)
+    val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
     val t = new DateTime(stats.time)
     import stats._
