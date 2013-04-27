@@ -71,3 +71,6 @@ opened and closed rate, do this:
 import axle.visualize._
 show(hammer.connectionRatePlot)
 ```
+
+![hammervis](./doc/image/hammer.png)
+
