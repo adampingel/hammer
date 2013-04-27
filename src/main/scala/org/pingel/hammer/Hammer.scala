@@ -3,32 +3,31 @@ package org.pingel.hammer
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor._
+import axle.visualize._
 import HammerProtocol._
 
-object Hammer {
+class Hammer(loadGenerator: LoadGenerator, initialRequestsPerSecond: Double) {
 
-  def main(args: Array[String]) {
+  val system = ActorSystem("HammerSystem")
 
-    val requestsPerSecond = 2
-    val duration = 20.seconds
-    val lg = new ExampleLoadGenerator()
+  val hammerActor = system.actorOf(Props(new HammerActor(loadGenerator)))
 
-    val system = ActorSystem("HammerSystem")
+  hammerActor ! TargetRPS(initialRequestsPerSecond)
 
-    val hammerActor = system.actorOf(Props(new HammerActor(lg)))
+  def setRpsIn(rps: Double, after: FiniteDuration) = {
+    system.scheduler.schedule(after, 0.seconds, hammerActor, TargetRPS(rps))
+  }
 
-    hammerActor ! TargetRPS(requestsPerSecond)
-
-    system.scheduler.schedule(duration, 0.seconds, hammerActor, TargetRPS(0))
-
+  def logStats(period: FiniteDuration) = {
     system.scheduler.schedule(
       0.millis,
-      5.seconds,
+      period,
       hammerActor,
       PrintStatistics())
-
-    val vis = new Visualization(hammerActor)
-      
   }
+
+  lazy val vis = new Visualization(hammerActor)
+
+  def connectionRatePlot() = vis.connectionRatePlot
 
 }

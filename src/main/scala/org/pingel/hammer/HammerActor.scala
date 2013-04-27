@@ -1,10 +1,18 @@
 package org.pingel.hammer
 
-import akka.actor.Cancellable
-import akka.actor.Actor
-import akka.actor.ActorLogging
-import concurrent.duration._
+import akka.actor.{ Actor, ActorLogging, Cancellable }
+import akka.pattern._
+import akka.pattern.ask
 import concurrent.ExecutionContext.Implicits.global
+import concurrent.Await
+import concurrent.duration._
+// import collection._
+import org.joda.time.DateTime
+import axle.visualize._
+import axle.visualize.Plottable._
+import axle.quanta.Time._
+import akka.util.Timeout
+import HammerProtocol._
 
 class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
