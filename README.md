@@ -5,7 +5,7 @@ See the ExampleLoadGenerator.scala, which uses the
 [Dispatch](http://dispatch.databinder.net/Dispatch.html) library to make asynchronous
 HTTP requests.
 
-Hammer.scala defines a main that demonstrates this code's usage:
+An example usage (also see Demo.scala):
 
 ```scala
 import axle.visualize._
