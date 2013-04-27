@@ -8,17 +8,32 @@ HTTP requests.
 Hammer.scala defines a main that demonstrates this code's usage:
 
 ```scala
-val rps = 1 // one request per second
-val duration = 20.seconds
-val lg = new ExampleLoadGenerator()
+import axle.visualize._
+import scala.concurrent.duration._
 
-val system = ActorSystem("HammerSystem")
+val lg = new LoadGenerator {
 
-val hammerActor = system.actorOf(Props(new HammerActor(lg, rps)))
+  import dispatch._ // , Defaults._
+  import scala.concurrent.ExecutionContext.Implicits.global
+  import util.Random.nextInt
 
-hammerActor ! HammerProtocol.Start(Some(duration))
+  val requestBuilders = Vector(
+    url("http://api.hostip.info/get_json.php"),
+    url("http://api.hostip.info/country.php")
+  )
 
-system.scheduler.schedule(0.millis, 5.seconds, hammerActor, HammerProtocol.PrintStatistics())
+  def randomRequestBuilder() = requestBuilders(nextInt(requestBuilders.size))
+
+  def makeNextRequest(id: Long) = {
+    Http(randomRequestBuilder() OK as.String)
+  }
+}
+
+val hammer = new Hammer(lg, 2d)
+hammer.logStats(5.seconds)
+hammer.setRpsIn(0d, 20.seconds)
+    
+show(hammer.connectionRatePlot)
 ```
 
 Example output:
