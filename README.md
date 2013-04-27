@@ -8,8 +8,6 @@ HTTP requests.
 An example usage (also see Demo.scala):
 
 ```scala
-import axle.visualize._
-import scala.concurrent.duration._
 
 val lg = new LoadGenerator {
 
@@ -30,10 +28,19 @@ val lg = new LoadGenerator {
 }
 
 val hammer = new Hammer(lg, 2d)
-hammer.logStats(5.seconds)
+```
+
+Set the target requests/second to 0 after 20 seconds:
+
+```scala
+import scala.concurrent.duration._
 hammer.setRpsIn(0d, 20.seconds)
-    
-show(hammer.connectionRatePlot)
+```
+
+Log connection open/closed rates every 5 seconds with:
+
+```scala
+hammer.logStats(5.seconds)
 ```
 
 Example output:
@@ -56,3 +63,11 @@ Hammer statistics
 ```
 
 To repeat this output, clone this repository and do `sbt run`.
+
+To create a plot of the target rate as well as the connections
+opened and closed rate, do this:
+
+```scala
+import axle.visualize._
+show(hammer.connectionRatePlot)
+```
