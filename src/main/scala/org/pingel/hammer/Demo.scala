@@ -1,16 +1,14 @@
 package org.pingel.hammer
 
-import scala.concurrent.duration._
-
 object Demo {
 
   def main(args: Array[String]) {
 
-    val lg = new LoadGenerator {
+    import dispatch._ // , Defaults._
+    import scala.concurrent.ExecutionContext.Implicits.global
+    import util.Random.nextInt
 
-      import dispatch._ // , Defaults._
-      import scala.concurrent.ExecutionContext.Implicits.global
-      import util.Random.nextInt
+    class HostIpApiLoadGenerator extends LoadGenerator {
 
       val requestBuilders = Vector(
         url("http://api.hostip.info/get_json.php"),
@@ -25,7 +23,9 @@ object Demo {
       }
     }
 
-    val hammer = new Hammer(lg, 2d)
+    val hammer = new Hammer(new HostIpApiLoadGenerator(), 2d)
+    
+    import scala.concurrent.duration._
     hammer.logStats(5.seconds)
 
     // hammer.rps(0.1d)

@@ -1,21 +1,22 @@
 hammer
 ======
 
-See the ExampleLoadGenerator.scala, 
+Also see Demo.scala.
 
-An example (also see Demo.scala) using
+The Hammer class requires a LoadGenerator.
+
+The following load generator uses
 [Dispatch](http://dispatch.databinder.net/Dispatch.html) library
 to make asynchronous HTTP requests.
 
 ```scala
 
 import org.pingel.hammer._
+import dispatch._ // , Defaults._
+import scala.concurrent.ExecutionContext.Implicits.global
+import util.Random.nextInt
 
-val lg = new LoadGenerator {
-
-  import dispatch._ // , Defaults._
-  import scala.concurrent.ExecutionContext.Implicits.global
-  import util.Random.nextInt
+class HostIpApiLoadGenerator extends LoadGenerator {
 
   val requestBuilders = Vector(
     url("http://api.hostip.info/get_json.php"),
@@ -28,8 +29,12 @@ val lg = new LoadGenerator {
     Http(randomRequestBuilder() OK as.String)
   }
 }
+```
 
-val hammer = new Hammer(lg, 2d)
+Now start the load generator, issuing 2 reqeusts per second:
+
+```scala
+val hammer = new Hammer(new HostIpApiLoadGenerator(), 2d)
 ```
 
 Log connection open/closed rates every 5 seconds with:
