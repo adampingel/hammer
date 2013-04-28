@@ -59,7 +59,7 @@ To repeat this output, clone this repository and do `sbt run`.
 Set the target requests/second after the hammer is running:
 
 ```scala
-hammer.setRps(0.2)
+hammer.rps(0.2)
 ```
 
 To create a plot of the target rate as well as the connections
