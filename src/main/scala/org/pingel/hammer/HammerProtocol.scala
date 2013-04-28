@@ -38,6 +38,6 @@ Hammer statistics
 
   }
 
-  case class PrintStatistics()
+  case class PrintStatistics(windowSize: Long)
 
 }

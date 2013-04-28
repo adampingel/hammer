@@ -72,8 +72,8 @@ opened and closed rate, do this:
 
 ```scala
 import axle.visualize._
-show(hammer.connectionRatePlot)
-show(hammer.latencyPlot)
+show(hammer.connectionRatePlot())
+show(hammer.latencyPlot())
 ```
 
 ![hammervis](./doc/image/hammer.png)

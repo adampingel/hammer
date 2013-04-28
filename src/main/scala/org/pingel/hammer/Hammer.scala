@@ -19,14 +19,14 @@ class Hammer(loadGenerator: LoadGenerator, initialRequestsPerSecond: Double) {
     hammerActor ! TargetRPS(rps)
   }
 
-  def logStats(period: FiniteDuration) = {
-    system.scheduler.schedule(0.millis, period, hammerActor, PrintStatistics())
+  def logStats(period: FiniteDuration, windowSize: Long = 10000L) = {
+    system.scheduler.schedule(0.millis, period, hammerActor, PrintStatistics(windowSize))
   }
 
   lazy val vis = new Visualization(hammerActor)
 
-  def connectionRatePlot() = vis.connectionRatePlot
+  def connectionRatePlot(windowSize: Long = 10000L) = vis.connectionRatePlot(windowSize)
 
-  def latencyPlot() = vis.latencyPlot
+  def latencyPlot(windowSize: Long = 10000L) = vis.latencyPlot(windowSize)
 
 }

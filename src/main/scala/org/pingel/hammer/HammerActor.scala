@@ -27,7 +27,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
   val completionTimes = collection.mutable.Map.empty[Long, Long]
   val latencies = collection.mutable.Map.empty[Long, Long]
 
-  def stats(windowWize: Long) = {
+  def stats(windowSize: Long) = {
 
     val now = System.currentTimeMillis
     val cutoff = math.max(startTime, now - windowSize)
@@ -92,9 +92,9 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
       log.info(s"request $requestId completed after $ms milliseconds")
     }
 
-    case GetStatistics() => sender ! stats()
+    case GetStatistics(windowSize) => sender ! stats(windowSize)
 
-    case PrintStatistics() => log.info(stats().toString)
+    case PrintStatistics(windowSize) => log.info(stats(windowSize).toString)
 
   }
 
