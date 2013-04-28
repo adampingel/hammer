@@ -20,7 +20,7 @@ class Visualization(hammerActorRef: ActorRef) {
 
   val d0 = new collection.immutable.TreeMap[DateTime, Double]()
 
-  def connectionRatePlot() = {
+  def connectionRatePlot(windowSize: Long = 10000L) = {
 
     val initialData = List(
       ("open rate", d0), ("close rate", d0), ("target rate", d0)
@@ -28,7 +28,7 @@ class Visualization(hammerActorRef: ActorRef) {
 
     val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Double])]) => {
 
-      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics()).mapTo[Statistics]
+      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
       val t = new DateTime(stats.time)
@@ -46,7 +46,7 @@ class Visualization(hammerActorRef: ActorRef) {
     Plot(
       initialData,
       connect = true,
-      title = Some("Hammer Connection Rates"),
+      title = Some("Connection Rates"),
       xAxis = 0.0,
       xAxisLabel = Some("time (t)"),
       yAxis = new DateTime(),
@@ -56,7 +56,7 @@ class Visualization(hammerActorRef: ActorRef) {
   }
 
   
-  def latencyPlot() = {
+  def latencyPlot(windowSize: Long = 10000L) = {
 
     val initialData = List(
       ("latency", d0)
@@ -64,7 +64,7 @@ class Visualization(hammerActorRef: ActorRef) {
 
     val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Double])]) => {
 
-      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics()).mapTo[Statistics]
+      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
       val t = new DateTime(stats.time)
@@ -80,7 +80,7 @@ class Visualization(hammerActorRef: ActorRef) {
     Plot(
       initialData,
       connect = true,
-      title = Some("Hammer Latency"),
+      title = Some("Response Latency"),
       xAxis = 0.0,
       xAxisLabel = Some("time (t)"),
       yAxis = new DateTime(),

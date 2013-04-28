@@ -13,7 +13,7 @@ object HammerProtocol {
 
   case class RequestCompleted(requestId: Long, content: String)
 
-  case class GetStatistics()
+  case class GetStatistics(windowSize: Long)
 
   case class Statistics(
     time: Long,
