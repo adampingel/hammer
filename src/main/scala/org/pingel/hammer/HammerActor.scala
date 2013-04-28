@@ -51,6 +51,8 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
       targetRps = target
 
+      requestSchedule.map(_.cancel)
+
       if (targetRps > 0) {
         requestSchedule = Some(context.system.scheduler.schedule(
           0.millis,
@@ -58,7 +60,6 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
           self,
           StartNextRequest()))
       } else {
-        requestSchedule.map(_.cancel)
         requestSchedule = None
       }
 

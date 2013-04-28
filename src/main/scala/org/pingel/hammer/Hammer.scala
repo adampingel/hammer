@@ -14,16 +14,13 @@ class Hammer(loadGenerator: LoadGenerator, initialRequestsPerSecond: Double) {
 
   hammerActor ! TargetRPS(initialRequestsPerSecond)
 
-  def setRpsIn(rps: Double, after: FiniteDuration) = {
-    system.scheduler.schedule(after, 0.seconds, hammerActor, TargetRPS(rps))
+  def rps(rps: Double) = {
+    // system.scheduler.schedule(after, 0.seconds, hammerActor, TargetRPS(rps))
+    hammerActor ! TargetRPS(rps)
   }
 
   def logStats(period: FiniteDuration) = {
-    system.scheduler.schedule(
-      0.millis,
-      period,
-      hammerActor,
-      PrintStatistics())
+    system.scheduler.schedule(0.millis, period, hammerActor, PrintStatistics())
   }
 
   lazy val vis = new Visualization(hammerActor)

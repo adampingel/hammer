@@ -1,6 +1,5 @@
 package org.pingel.hammer
 
-import axle.visualize._
 import scala.concurrent.duration._
 
 object Demo {
@@ -28,8 +27,10 @@ object Demo {
 
     val hammer = new Hammer(lg, 2d)
     hammer.logStats(5.seconds)
-    hammer.setRpsIn(0d, 20.seconds)
-    
+
+    // hammer.rps(0.1d)
+
+    import axle.visualize._
     show(hammer.connectionRatePlot)
     show(hammer.latencyPlot)
 
