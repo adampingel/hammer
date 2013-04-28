@@ -31,6 +31,7 @@ object Demo {
     hammer.setRpsIn(0d, 20.seconds)
     
     show(hammer.connectionRatePlot)
+    show(hammer.latencyPlot)
 
   }
 

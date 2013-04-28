@@ -20,6 +20,7 @@ object HammerProtocol {
     targetRps: Double,
     startRateAverage: Double,
     completeRateAverage: Double,
+    latencyAverage: Double,
     totalRequests: Long,
     pendingRequests: Long) {
 
@@ -30,6 +31,7 @@ Hammer statistics
   Target RPS: $targetRps
   Average # requests started per second: $startRateAverage
   Average # requests completed per second: $completeRateAverage
+  Latency average: $latencyAverage milliseconds
   Current # pending requests: $pendingRequests
   Total # requests: $totalRequests
     """

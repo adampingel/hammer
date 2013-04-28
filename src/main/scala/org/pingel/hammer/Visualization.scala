@@ -46,7 +46,7 @@ class Visualization(hammerActorRef: ActorRef) {
     Plot(
       initialData,
       connect = true,
-      title = Some("Hammer Stats"),
+      title = Some("Hammer Connection Rates"),
       xAxis = 0.0,
       xAxisLabel = Some("time (t)"),
       yAxis = new DateTime(),
@@ -55,4 +55,38 @@ class Visualization(hammerActorRef: ActorRef) {
     )
   }
 
+  
+  def latencyPlot() = {
+
+    val initialData = List(
+      ("latency", d0)
+    )
+
+    val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Double])]) => {
+
+      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics()).mapTo[Statistics]
+      val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
+
+      val t = new DateTime(stats.time)
+
+      previous match {
+        case latency :: Nil => List(
+          ("latency", latency._2 + (t -> stats.latencyAverage))
+        )
+        case _ => Nil
+      }
+    }
+
+    Plot(
+      initialData,
+      connect = true,
+      title = Some("Hammer Latency"),
+      xAxis = 0.0,
+      xAxisLabel = Some("time (t)"),
+      yAxis = new DateTime(),
+      yAxisLabel = Some("milliseconds"),
+      refresher = Some(refreshFn, 1 *: second)
+    )
+  }
+  
 }

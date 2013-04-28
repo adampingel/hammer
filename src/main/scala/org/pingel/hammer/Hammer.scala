@@ -30,4 +30,6 @@ class Hammer(loadGenerator: LoadGenerator, initialRequestsPerSecond: Double) {
 
   def connectionRatePlot() = vis.connectionRatePlot
 
+  def latencyPlot() = vis.latencyPlot
+
 }

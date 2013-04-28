@@ -25,6 +25,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
   var requestId = 0L
   val startTimes = collection.mutable.Map.empty[Long, Long]
   val completionTimes = collection.mutable.Map.empty[Long, Long]
+  val latencies = collection.mutable.Map.empty[Long, Long]
 
   def stats() = {
     val now = System.currentTimeMillis
@@ -35,8 +36,13 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
     val startRateAverage = startTimes.size / secondsUp
     val completeRateAverage = completionTimes.size / secondsUp
+    val latencyAverage =
+      if (latencies.size > 0)
+        latencies.values.sum / latencies.size
+      else
+        0d
 
-    Statistics(now, targetRps, startRateAverage, completeRateAverage, requestId, startTimes.size - completionTimes.size)
+    Statistics(now, targetRps, startRateAverage, completeRateAverage, latencyAverage, requestId, startTimes.size - completionTimes.size)
   }
 
   def receive = {
@@ -73,6 +79,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
       val time = System.currentTimeMillis()
       completionTimes += requestId -> time
       val ms = time - startTimes(requestId)
+      latencies += requestId -> ms
       log.info(s"request $requestId completed after $ms milliseconds")
     }
 
