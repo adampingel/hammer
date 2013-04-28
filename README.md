@@ -1,11 +1,11 @@
 hammer
 ======
 
-See the ExampleLoadGenerator.scala, which uses the
-[Dispatch](http://dispatch.databinder.net/Dispatch.html) library to make asynchronous
-HTTP requests.
+See the ExampleLoadGenerator.scala, 
 
-An example usage (also see Demo.scala):
+An example (also see Demo.scala) using
+[Dispatch](http://dispatch.databinder.net/Dispatch.html) library
+to make asynchronous HTTP requests.
 
 ```scala
 
