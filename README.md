@@ -73,19 +73,21 @@ hammer.rps(0.2 *: Hz)
 ```
 
 Create a plots for
-1. target rate as well as the connections opened and closed rate
 1. latency average
+1. target rate as well as the connections opened and closed rate
 
 ```scala
 import axle.visualize._
 import axle.algebra.Plottable._
 
-implicit val hzP = Hz.plottable
-show(hammer.connectionRatePlot())
-
 implicit val msP = ms.plottable
 show(hammer.latencyPlot())
+
+implicit val hzP = Hz.plottable
+show(hammer.connectionRatePlot())
 ```
 
-![hammervis](./doc/image/hammer.png)
+![latency](./doc/image/latency.png)
+
+![connectionrates](./doc/image/connectionrates.png)
 
