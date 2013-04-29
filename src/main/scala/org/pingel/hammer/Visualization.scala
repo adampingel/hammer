@@ -49,6 +49,7 @@ class Visualization(hammerActorRef: ActorRef) {
     Plot(
       initialData,
       connect = true,
+      pointDiameter = 0,
       title = Some("Connection Rates"),
       xAxis = Some(0.0),
       xAxisLabel = Some("time (t)"),
@@ -84,10 +85,10 @@ class Visualization(hammerActorRef: ActorRef) {
     Plot(
       initialData,
       connect = true,
+      pointDiameter = 0,
       title = Some("Response Latency"),
       xAxis = Some(0.0),
       xAxisLabel = Some("time (t)"),
-      //yAxis = Some(new DateTime()),
       yAxisLabel = Some("milliseconds"),
       refresher = Some(refreshFn, 1 *: second)
     )
