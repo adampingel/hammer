@@ -9,7 +9,7 @@ import concurrent.duration._
 // import collection._
 import org.joda.time.DateTime
 import axle.visualize._
-import axle.visualize.Plottable._
+import axle.algebra.Plottable._
 import axle.quanta.Time._
 import akka.util.Timeout
 import HammerProtocol._
@@ -50,9 +50,8 @@ class Visualization(hammerActorRef: ActorRef) {
       initialData,
       connect = true,
       title = Some("Connection Rates"),
-      xAxis = 0.0,
+      xAxis = Some(0.0),
       xAxisLabel = Some("time (t)"),
-      yAxis = new DateTime(),
       yAxisLabel = Some("connections / second"),
       refresher = Some(refreshFn, 1 *: second)
     )
@@ -86,9 +85,9 @@ class Visualization(hammerActorRef: ActorRef) {
       initialData,
       connect = true,
       title = Some("Response Latency"),
-      xAxis = 0.0,
+      xAxis = Some(0.0),
       xAxisLabel = Some("time (t)"),
-      yAxis = new DateTime(),
+      //yAxis = Some(new DateTime()),
       yAxisLabel = Some("milliseconds"),
       refresher = Some(refreshFn, 1 *: second)
     )

@@ -9,7 +9,7 @@ import concurrent.Await
 import concurrent.duration._
 import org.joda.time.DateTime
 import axle.visualize._
-import axle.visualize.Plottable._
+import axle.algebra.Plottable._
 import axle.quanta.Time._
 import HammerProtocol._
 
