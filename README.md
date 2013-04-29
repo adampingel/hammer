@@ -73,8 +73,9 @@ hammer.rps(0.2 *: Hz)
 ```
 
 Create a plots for
-1. latency average
-1. target rate as well as the connections opened and closed rate
+
+* latency average
+* target rate as well as the connections opened and closed rate
 
 ```scala
 import axle.visualize._
