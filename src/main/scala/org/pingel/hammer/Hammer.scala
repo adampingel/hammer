@@ -23,7 +23,7 @@ class Hammer(loadGenerator: LoadGenerator, initialRequestsPerSecond: Double) {
     system.scheduler.schedule(0.millis, period, hammerActor, PrintStatistics(windowSize))
   }
 
-  lazy val vis = new Visualization(hammerActor)
+  lazy val vis = new Visualization(hammerActor, loadGenerator.name)
 
   def connectionRatePlot(windowSize: Long = 10000L, viewWidth: Long = 120000L) = vis.connectionRatePlot(windowSize, viewWidth)
 

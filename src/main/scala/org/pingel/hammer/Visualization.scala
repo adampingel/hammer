@@ -14,7 +14,7 @@ import axle.quanta.Time._
 import akka.util.Timeout
 import HammerProtocol._
 
-class Visualization(hammerActorRef: ActorRef) {
+class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
 
   implicit val askTimeout = Timeout(1.second)
 
@@ -50,7 +50,7 @@ class Visualization(hammerActorRef: ActorRef) {
       initialData,
       connect = true,
       pointDiameter = 0,
-      title = Some("Connection Rates"),
+      title = Some(s"$loadGeneratorName Connection Rates"),
       xAxis = Some(0.0),
       xAxisLabel = Some("time (t)"),
       yAxisLabel = Some("connections / second"),
@@ -86,7 +86,7 @@ class Visualization(hammerActorRef: ActorRef) {
       initialData,
       connect = true,
       pointDiameter = 0,
-      title = Some("Response Latency"),
+      title = Some(s"$loadGeneratorName Response Latency"),
       xAxis = Some(0.0),
       xAxisLabel = Some("time (t)"),
       yAxisLabel = Some("milliseconds"),

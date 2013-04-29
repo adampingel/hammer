@@ -10,6 +10,8 @@ object Demo {
 
     class HostIpApiLoadGenerator extends LoadGenerator {
 
+      def name() = "hostip.info API"
+      
       val requestBuilders = Vector(
         url("http://api.hostip.info/get_json.php"),
         url("http://api.hostip.info/country.php")
