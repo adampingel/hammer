@@ -52,15 +52,16 @@ hammer.logStatsEvery(5 *: second)
 Example output:
 
 ```
-[...]
-[INFO] [04/22/2013 01:49:15.615] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] 
+[INFO] [04/29/2013 00:50:26.433] [HammerSystem-akka.actor.default-dispatcher-5] [akka://HammerSystem/user/$a] 
 Hammer statistics
 
-  Current time: 1366620555612
-  Target RPS: 1.0
-  Average # requests started per second: 1.0470160043874956
-  Average # requests completed per second: 0.9971580994166626
-  Total # requests: 21
+  Current time: 1367221826433
+  Target RPS: 2 Hz
+  Average # requests started per second: 1.9 Hz
+  Average # requests completed per second: 1.7 Hz
+  Latency average: 849.2941176470588 ms milliseconds
+  Current # pending requests: 3
+  Total # requests: 40
 ```
 
 To repeat this output, clone this repository and do `sbt run`.
@@ -72,8 +73,8 @@ hammer.rps(0.2 *: Hz)
 ```
 
 Create a plots for
-# target rate as well as the connections opened and closed rate
-# latency average
+1. target rate as well as the connections opened and closed rate
+1. latency average
 
 ```scala
 import axle.visualize._
