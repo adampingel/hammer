@@ -32,7 +32,7 @@ Hammer statistics
   Target RPS: $targetRps
   Average # requests started per second: $startRateAverage
   Average # requests completed per second: $completeRateAverage
-  Latency average: $latencyAverage milliseconds
+  Latency average: $latencyAverage
   Current # pending requests: $pendingRequests
   Total # requests: $totalRequests
     """

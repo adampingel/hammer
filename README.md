@@ -52,16 +52,16 @@ hammer.logStatsEvery(5 *: second)
 Example output:
 
 ```
-[INFO] [04/29/2013 00:50:26.433] [HammerSystem-akka.actor.default-dispatcher-5] [akka://HammerSystem/user/$a] 
+[INFO] [04/29/2013 01:03:17.175] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] 
 Hammer statistics
 
-  Current time: 1367221826433
+  Current time: 1367222597174
   Target RPS: 2 Hz
-  Average # requests started per second: 1.9 Hz
-  Average # requests completed per second: 1.7 Hz
-  Latency average: 849.2941176470588 ms milliseconds
-  Current # pending requests: 3
-  Total # requests: 40
+  Average # requests started per second: 2.0 Hz
+  Average # requests completed per second: 2.0 Hz
+  Latency average: 916.55 ms
+  Current # pending requests: 2
+  Total # requests: 60
 ```
 
 To repeat this output, clone this repository and do `sbt run`.
