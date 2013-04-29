@@ -4,7 +4,7 @@ version := "0.1-SNAPSHOT"
 
 organization := "org.pingel"
 
-scalaVersion := "2.10.0"
+scalaVersion := "2.10.1"
 
 // initialCommands in console := "import collection._"
 
