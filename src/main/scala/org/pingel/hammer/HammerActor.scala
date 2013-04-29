@@ -3,15 +3,14 @@ package org.pingel.hammer
 import akka.actor.{ Actor, ActorLogging, Cancellable }
 import akka.pattern._
 import akka.pattern.ask
+import akka.util.Timeout
 import concurrent.ExecutionContext.Implicits.global
 import concurrent.Await
 import concurrent.duration._
-// import collection._
 import org.joda.time.DateTime
 import axle.visualize._
 import axle.visualize.Plottable._
 import axle.quanta.Time._
-import akka.util.Timeout
 import HammerProtocol._
 
 class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
@@ -33,10 +32,10 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     val cutoff = math.max(startTime, now - windowSize)
     val denominator = now - cutoff
 
-    //    val secondsUp = ((now - startTime) / 1000d)
-    //    val startRateAverage = startTimes.size / secondsUp
-    //    val completeRateAverage = completionTimes.size / secondsUp
-    //    val latencyAverage = if (latencies.size > 0) latencies.values.sum / latencies.size else 0d
+    // val secondsUp = ((now - startTime) / 1000d)
+    // val startRateAverage = startTimes.size / secondsUp
+    // val completeRateAverage = completionTimes.size / secondsUp
+    // val latencyAverage = if (latencies.size > 0) latencies.values.sum / latencies.size else 0d
 
     val recentlyStarted = startTimes filter { case (k, t) => t >= cutoff } keySet
     val recentlyCompleted = completionTimes filter { case (k, t) => t >= cutoff } keySet
@@ -89,7 +88,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
       completionTimes += requestId -> time
       val ms = time - startTimes(requestId)
       latencies += requestId -> ms
-      log.info(s"request $requestId completed after $ms milliseconds")
+      log.debug(s"request $requestId completed after $ms milliseconds")
     }
 
     case GetStatistics(windowSize) => sender ! stats(windowSize)

@@ -25,8 +25,8 @@ class Hammer(loadGenerator: LoadGenerator, initialRequestsPerSecond: Double) {
 
   lazy val vis = new Visualization(hammerActor)
 
-  def connectionRatePlot(windowSize: Long = 10000L) = vis.connectionRatePlot(windowSize)
+  def connectionRatePlot(windowSize: Long = 10000L, viewWidth: Long = 120000L) = vis.connectionRatePlot(windowSize, viewWidth)
 
-  def latencyPlot(windowSize: Long = 10000L) = vis.latencyPlot(windowSize)
+  def latencyPlot(windowSize: Long = 10000L, viewWidth: Long = 120000L) = vis.latencyPlot(windowSize, viewWidth)
 
 }

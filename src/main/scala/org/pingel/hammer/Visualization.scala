@@ -20,13 +20,16 @@ class Visualization(hammerActorRef: ActorRef) {
 
   val d0 = new collection.immutable.TreeMap[DateTime, Double]()
 
-  def connectionRatePlot(windowSize: Long = 10000L) = {
+  def connectionRatePlot(windowSize: Long, viewWidth: Long) = {
 
     val initialData = List(
       ("open rate", d0), ("close rate", d0), ("target rate", d0)
     )
 
     val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Double])]) => {
+
+      val now = System.currentTimeMillis()
+      val viewCutoff = now - viewWidth
 
       val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
@@ -35,9 +38,9 @@ class Visualization(hammerActorRef: ActorRef) {
 
       previous match {
         case open :: close :: target :: Nil => List(
-          ("open rate", open._2 + (t -> stats.startRateAverage)),
-          ("close rate", close._2 + (t -> stats.completeRateAverage)),
-          ("target rate", target._2 + (t -> stats.targetRps))
+          ("open rate", d0 ++ (open._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.startRateAverage)),
+          ("close rate", d0 ++ (close._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.completeRateAverage)),
+          ("target rate", d0 ++ (target._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.targetRps))
         )
         case _ => Nil
       }
@@ -55,26 +58,28 @@ class Visualization(hammerActorRef: ActorRef) {
     )
   }
 
-  
-  def latencyPlot(windowSize: Long = 10000L) = {
+  def latencyPlot(windowSize: Long, viewWidth: Long) = {
 
-    val initialData = List(
-      ("latency", d0)
-    )
+    val initialData = List(("latency", d0))
 
     val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Double])]) => {
+
+      val now = System.currentTimeMillis()
+      val viewCutoff = now - viewWidth
 
       val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
       val t = new DateTime(stats.time)
 
-      previous match {
+      val next = previous match {
         case latency :: Nil => List(
-          ("latency", latency._2 + (t -> stats.latencyAverage))
+          ("latency", (d0 ++ (latency._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.latencyAverage)))
         )
         case _ => Nil
       }
+
+      next
     }
 
     Plot(
@@ -88,5 +93,5 @@ class Visualization(hammerActorRef: ActorRef) {
       refresher = Some(refreshFn, 1 *: second)
     )
   }
-  
+
 }

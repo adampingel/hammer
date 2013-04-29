@@ -31,7 +31,7 @@ object Demo {
     // hammer.rps(0.1d)
 
     import axle.visualize._
-    show(hammer.connectionRatePlot())
+    //show(hammer.connectionRatePlot())
     show(hammer.latencyPlot())
 
   }
