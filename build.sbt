@@ -14,5 +14,6 @@ libraryDependencies ++= Seq(
   "net.databinder.dispatch" %% "dispatch-core" % "0.10.0",
   "com.typesafe.akka" %% "akka-actor" % "2.2-M3",
   "com.typesafe.akka" %% "akka-agent" % "2.2-M3",
-  "org.pingel" %% "axle" % "0.1-SNAPSHOT"
+  "org.pingel" %% "axle-core" % "0.1-SNAPSHOT",
+  "org.pingel" %% "axle-visualize" % "0.1-SNAPSHOT"
 )
