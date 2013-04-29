@@ -33,7 +33,7 @@ class HostIpApiLoadGenerator extends LoadGenerator {
 }
 ```
 
-Now start the load generator, issuing 2 reqeusts per second (2 Hz):
+Start the load generator, issuing 2 requests per second (2 Hz):
 
 ```scala
 import axle.quanta._
@@ -42,7 +42,7 @@ import Frequency._
 val hammer = new Hammer(new HostIpApiLoadGenerator(), 2 *: Hz)
 ```
 
-Log connection open/closed rates every 5 seconds with:
+Log hammer statistics every 5 seconds with:
 
 ```scala
 import Time._
