@@ -10,7 +10,7 @@ import concurrent.duration._
 import org.joda.time.DateTime
 import axle.visualize._
 import axle.algebra.Plottable._
-import axle.quanta.Time._
+import axle.quanta._
 import HammerProtocol._
 
 class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
@@ -19,7 +19,11 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
   var requestSchedule: Option[Cancellable] = None
 
-  var targetRps = 0d
+  import Frequency._
+  var targetRps: Frequency.Q = 0 *: Hz
+
+  import Time._
+
   val startTime = System.currentTimeMillis()
   var requestId = 0L
   val startTimes = collection.mutable.Map.empty[Long, Long]
@@ -32,22 +36,26 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     val cutoff = math.max(startTime, now - windowSize)
     val denominator = now - cutoff
 
-    // val secondsUp = ((now - startTime) / 1000d)
-    // val startRateAverage = startTimes.size / secondsUp
-    // val completeRateAverage = completionTimes.size / secondsUp
-    // val latencyAverage = if (latencies.size > 0) latencies.values.sum / latencies.size else 0d
-
     val recentlyStarted = startTimes filter { case (k, t) => t >= cutoff } keySet
     val recentlyCompleted = completionTimes filter { case (k, t) => t >= cutoff } keySet
 
-    val startRateAverage = if (denominator > 0) 1000 * recentlyStarted.size.toDouble / denominator else 0
-    val completeRateAverage = if (denominator > 0) 1000 * recentlyCompleted.size.toDouble / denominator else 0
+    val startRateAverage =
+      if (denominator > 0)
+        (1000 * recentlyStarted.size.toDouble / denominator) *: Hz
+      else
+        0 *: Hz
+
+    val completeRateAverage =
+      if (denominator > 0)
+        (1000 * recentlyCompleted.size.toDouble / denominator) *: Hz
+      else
+        0 *: Hz
 
     val latencyAverage =
       if (latencies.size > 0)
-        latencies.filterKeys(recentlyCompleted.contains(_)).values.sum.toDouble / recentlyCompleted.size
+        (latencies.filterKeys(recentlyCompleted.contains(_)).values.sum.toDouble / recentlyCompleted.size) *: millisecond
       else
-        0d
+        0 *: millisecond
 
     Statistics(now, targetRps, startRateAverage, completeRateAverage, latencyAverage, requestId, startTimes.size - completionTimes.size)
   }
@@ -60,10 +68,11 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
       requestSchedule.map(_.cancel)
 
-      if (targetRps > 0) {
+      if (targetRps.magnitude > 0) {
+        val periodFD = (1d / (targetRps in KHz).magnitude.toDouble).millis
         requestSchedule = Some(context.system.scheduler.schedule(
           0.millis,
-          (1 / targetRps).seconds,
+          periodFD,
           self,
           StartNextRequest()))
       } else {
@@ -88,7 +97,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
       completionTimes += requestId -> time
       val ms = time - startTimes(requestId)
       latencies += requestId -> ms
-      log.debug(s"request $requestId completed after $ms milliseconds")
+      log.debug(s"request $requestId completed after $ms")
     }
 
     case GetStatistics(windowSize) => sender ! stats(windowSize)

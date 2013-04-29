@@ -1,14 +1,15 @@
 package org.pingel.hammer
 
 import scala.concurrent.duration.FiniteDuration
+import axle.quanta._
 
 object HammerProtocol {
 
   // case class Start(stopAfter: Option[FiniteDuration])
   // case class Stop()
 
-  case class TargetRPS(target: Double)
-  
+  case class TargetRPS(target: Frequency.Q)
+
   case class StartNextRequest()
 
   case class RequestCompleted(requestId: Long, content: String)
@@ -17,10 +18,10 @@ object HammerProtocol {
 
   case class Statistics(
     time: Long,
-    targetRps: Double,
-    startRateAverage: Double,
-    completeRateAverage: Double,
-    latencyAverage: Double,
+    targetRps: Frequency.Q,
+    startRateAverage: Frequency.Q,
+    completeRateAverage: Frequency.Q,
+    latencyAverage: Time.Q,
     totalRequests: Long,
     pendingRequests: Long) {
 
