@@ -33,13 +33,15 @@ object Demo {
     import Time._
     hammer.logStatsEvery(5 *: second)
 
-    // hammer.rps(0.1d)
+    // hammer.rps(0.1 *: Hz)
 
     import axle.visualize._
     import axle.algebra.Plottable._
-    implicit val msp = ms.plottable
 
+    implicit val hzP = Hz.plottable
     //show(hammer.connectionRatePlot())
+
+    implicit val msP = ms.plottable
     show(hammer.latencyPlot())
 
   }

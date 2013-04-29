@@ -33,24 +33,26 @@ class HostIpApiLoadGenerator extends LoadGenerator {
 }
 ```
 
-Now start the load generator, issuing 2 reqeusts per second:
+Now start the load generator, issuing 2 reqeusts per second (2 Hz):
 
 ```scala
-val hammer = new Hammer(new HostIpApiLoadGenerator(), 2d)
+import axle.quanta._
+import Frequency._
+
+val hammer = new Hammer(new HostIpApiLoadGenerator(), 2 *: Hz)
 ```
 
 Log connection open/closed rates every 5 seconds with:
 
 ```scala
-import scala.concurrent.duration._
-hammer.logStats(5.seconds)
+import Time._
+hammer.logStatsEvery(5 *: second)
 ```
 
 Example output:
 
 ```
 [...]
-[INFO] [04/22/2013 01:49:14.713] [HammerSystem-akka.actor.default-dispatcher-2] [akka://HammerSystem/user/$a] request 19 completed after 102 milliseconds
 [INFO] [04/22/2013 01:49:15.615] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] 
 Hammer statistics
 
@@ -66,15 +68,21 @@ To repeat this output, clone this repository and do `sbt run`.
 Set the target requests/second after the hammer is running:
 
 ```scala
-hammer.rps(0.2)
+hammer.rps(0.2 *: Hz)
 ```
 
-To create a plot of the target rate as well as the connections
-opened and closed rate, do this:
+Create a plots for
+# target rate as well as the connections opened and closed rate
+# latency average
 
 ```scala
 import axle.visualize._
+import axle.algebra.Plottable._
+
+implicit val hzP = Hz.plottable
 show(hammer.connectionRatePlot())
+
+implicit val msP = ms.plottable
 show(hammer.latencyPlot())
 ```
 
