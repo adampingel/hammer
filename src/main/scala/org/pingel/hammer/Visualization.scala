@@ -19,8 +19,8 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
 
   implicit val askTimeout = Timeout(1.second)
 
-  val d0f = new collection.immutable.TreeMap[DateTime, Frequency.Q]()
-  val d0t = new collection.immutable.TreeMap[DateTime, Time.Q]()
+  val d0f = collection.immutable.TreeMap[Long, Frequency.Q]()
+  val d0t = collection.immutable.TreeMap[Long, Time.Q]()
 
   def connectionRatePlot(windowSize: Long, viewWidth: Long) = {
 
@@ -28,7 +28,7 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       ("open rate", d0f), ("close rate", d0f), ("target rate", d0f)
     )
 
-    val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Frequency.Q])]) => {
+    val refreshFn = (previous: List[(String, collection.immutable.TreeMap[Long, Frequency.Q])]) => {
 
       val now = System.currentTimeMillis()
       val viewCutoff = now - viewWidth
@@ -36,11 +36,13 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
+      val t = stats.time.getMillis
+
       previous match {
         case open :: close :: target :: Nil => List(
-          ("open rate", d0f ++ (open._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.startRateAverage)),
-          ("close rate", d0f ++ (close._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.completeRateAverage)),
-          ("target rate", d0f ++ (target._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.targetRps))
+          ("open rate", open._2.dropWhile { case (t, _) => t < viewCutoff } + (t -> stats.startRateAverage)),
+          ("close rate", close._2.dropWhile { case (t, _) => t < viewCutoff } + (t -> stats.completeRateAverage)),
+          ("target rate", target._2.dropWhile { case (t, _) => t < viewCutoff } + (t -> stats.targetRps))
         )
         case _ => Nil
       }
@@ -64,7 +66,7 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
 
     val initialData = List(("latency", d0t))
 
-    val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Time.Q])]) => {
+    val refreshFn = (previous: List[(String, collection.immutable.TreeMap[Long, Time.Q])]) => {
 
       val now = System.currentTimeMillis()
       val viewCutoff = now - viewWidth
@@ -72,9 +74,11 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
+      val t = stats.time.getMillis
+
       previous match {
         case latency :: Nil => List(
-          ("latency", (d0t ++ (latency._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.latencyAverage)))
+          ("latency", latency._2.dropWhile { case (t, _) => t < viewCutoff } + (t -> stats.latencyAverage))
         )
         case _ => Nil
       }
