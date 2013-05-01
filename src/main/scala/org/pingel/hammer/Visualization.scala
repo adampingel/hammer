@@ -6,6 +6,7 @@ import akka.pattern.ask
 import concurrent.ExecutionContext.Implicits.global
 import concurrent.Await
 import concurrent.duration._
+import java.util.concurrent.TimeoutException
 import org.joda.time.DateTime
 import axle.visualize._
 import axle.algebra.Plottable._
@@ -33,17 +34,22 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       val now = System.currentTimeMillis()
       val viewCutoff = now - viewWidth
 
-      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
-      val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
+      try {
+        val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
+        val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
-      previous match {
-        case open :: close :: target :: Nil => List(
-          ("open rate", open._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.startRateAverage)),
-          ("close rate", close._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.completeRateAverage)),
-          ("target rate", target._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.targetRps))
-        )
-        case _ => Nil
+        previous match {
+          case open :: close :: target :: Nil => List(
+            ("open rate", open._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.startRateAverage)),
+            ("close rate", close._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.completeRateAverage)),
+            ("target rate", target._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.targetRps))
+          )
+          case _ => Nil
+        }
+      } catch {
+        case e: TimeoutException => previous
       }
+
     }
 
     implicit val hzp = Hz.plottable
@@ -69,14 +75,19 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       val now = System.currentTimeMillis()
       val viewCutoff = now - viewWidth
 
-      val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
-      val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
+      try {
+        val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
 
-      previous match {
-        case latency :: Nil => List(
-          ("latency", latency._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.latencyAverage))
-        )
-        case _ => Nil
+        val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
+
+        previous match {
+          case latency :: Nil => List(
+            ("latency", latency._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.latencyAverage))
+          )
+          case _ => Nil
+        }
+      } catch {
+        case e: TimeoutException => previous
       }
     }
 
