@@ -57,7 +57,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
       else
         0 *: millisecond
 
-    Statistics(now, targetRps, startRateAverage, completeRateAverage, latencyAverage, requestId, startTimes.size - completionTimes.size)
+    Statistics(new DateTime(now), targetRps, startRateAverage, completeRateAverage, latencyAverage, requestId, startTimes.size - completionTimes.size)
   }
 
   def receive = {

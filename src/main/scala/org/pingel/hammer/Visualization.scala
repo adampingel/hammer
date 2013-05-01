@@ -36,13 +36,11 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
-      val t = new DateTime(stats.time)
-
       previous match {
         case open :: close :: target :: Nil => List(
-          ("open rate", d0f ++ (open._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.startRateAverage)),
-          ("close rate", d0f ++ (close._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.completeRateAverage)),
-          ("target rate", d0f ++ (target._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.targetRps))
+          ("open rate", d0f ++ (open._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.startRateAverage)),
+          ("close rate", d0f ++ (close._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.completeRateAverage)),
+          ("target rate", d0f ++ (target._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.targetRps))
         )
         case _ => Nil
       }
@@ -74,11 +72,9 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
       val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
       val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
-      val t = new DateTime(stats.time)
-
       previous match {
         case latency :: Nil => List(
-          ("latency", (d0t ++ (latency._2 filterKeys { _.isAfter(viewCutoff) }) + (t -> stats.latencyAverage)))
+          ("latency", (d0t ++ (latency._2 filterKeys { _.isAfter(viewCutoff) }) + (stats.time -> stats.latencyAverage)))
         )
         case _ => Nil
       }

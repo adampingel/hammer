@@ -39,7 +39,7 @@ object Demo {
     import axle.algebra.Plottable._
 
     implicit val hzP = Hz.plottable
-    //show(hammer.connectionRatePlot())
+    show(hammer.connectionRatePlot())
 
     implicit val msP = ms.plottable
     show(hammer.latencyPlot())

@@ -2,6 +2,7 @@ package org.pingel.hammer
 
 import scala.concurrent.duration.FiniteDuration
 import axle.quanta._
+import org.joda.time.DateTime
 
 object HammerProtocol {
 
@@ -17,7 +18,7 @@ object HammerProtocol {
   case class GetStatistics(windowSize: Long)
 
   case class Statistics(
-    time: Long,
+    time: DateTime,
     targetRps: Frequency.Q,
     startRateAverage: Frequency.Q,
     completeRateAverage: Frequency.Q,
