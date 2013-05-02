@@ -26,6 +26,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
   val startTime = System.currentTimeMillis()
   var requestId = 0L
+
   val startTimes = collection.mutable.Map.empty[Long, Long]
   val completionTimes = collection.mutable.Map.empty[Long, Long]
   val latencies = collection.mutable.Map.empty[Long, Long]
@@ -36,12 +37,12 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     val cutoff = math.max(startTime, now - windowSize)
     val denominator = now - cutoff
 
-    val recentlyStarted = startTimes filter { case (k, t) => t >= cutoff } keySet
+    val numRecentlyStarted = startTimes filter { case (k, t) => t >= cutoff } size
     val recentlyCompleted = completionTimes filter { case (k, t) => t >= cutoff } keySet
 
     val startRateAverage =
       if (denominator > 0)
-        (1000 * recentlyStarted.size.toDouble / denominator) *: Hz
+        (1000d * numRecentlyStarted / denominator) *: Hz
       else
         0 *: Hz
 
