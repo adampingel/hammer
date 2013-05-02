@@ -28,13 +28,13 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
   var requestId = 0L
 
   // Note: The following 3 maps will grow without bound during execution:
-  
+
   // The keys are all the request ids, which start at 0L and decrement from there
   // This keeps allows the natural Long sort order to put the most recent requests at the
   // head of the sorted map
-  
+
   var startTimes = collection.immutable.TreeMap.empty[Long, Long]
-  var completionTimes = collection.immutable.TreeMap.empty[Long, Long]
+  var requestsOrderedByCompletionTime = List.empty[(Long, Long)]
   var latencies = collection.immutable.TreeMap.empty[Long, Long]
 
   def stats(windowSize: Long) = {
@@ -43,8 +43,8 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     val cutoff = math.max(startTime, now - windowSize)
     val denominator = now - cutoff
 
-    val numRecentlyStarted = startTimes takeWhile { case (nk, t) => t >= cutoff } size
-    val recentlyCompleted = completionTimes filter { case (nk, t) => t >= cutoff } keySet
+    val numRecentlyStarted = startTimes takeWhile { case (id, t) => t >= cutoff } size
+    val recentlyCompleted = requestsOrderedByCompletionTime takeWhile { case (id, t) => t >= cutoff } map { _._1 }
 
     val startRateAverage =
       if (denominator > 0)
@@ -65,7 +65,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
         0 *: millisecond
       }
 
-    Statistics(new DateTime(now), targetRps, startRateAverage, completeRateAverage, latencyAverage, -requestId, startTimes.size - completionTimes.size)
+    Statistics(new DateTime(now), targetRps, startRateAverage, completeRateAverage, latencyAverage, -requestId, startTimes.size - requestsOrderedByCompletionTime.size)
   }
 
   def receive = {
@@ -102,7 +102,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
     case RequestCompleted(requestId, content) => {
       val time = System.currentTimeMillis()
-      completionTimes = completionTimes + (requestId -> time)
+      requestsOrderedByCompletionTime = (requestId -> time) :: requestsOrderedByCompletionTime
       val ms = time - startTimes(requestId)
       latencies = latencies + (requestId -> ms)
       log.debug(s"request $requestId completed after $ms")
