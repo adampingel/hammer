@@ -15,7 +15,7 @@ object Demo {
       val requestBuilders = Vector(
         url("http://api.hostip.info/get_json.php"),
         url("http://api.hostip.info/country.php")
-        //url("http://www.cnn.com/")
+        //url("http://localhost:9000/")
       )
 
       def randomRequestBuilder() = requestBuilders(nextInt(requestBuilders.size))
@@ -38,8 +38,8 @@ object Demo {
     import axle.visualize._
     import axle.algebra.Plottable._
 
-//    implicit val hzP = Hz.plottable
-//    show(hammer.connectionRatePlot())
+    implicit val hzP = Hz.plottable
+    show(hammer.connectionRatePlot())
 
     implicit val msP = ms.plottable
     show(hammer.latencyPlot())
