@@ -66,7 +66,11 @@ Hammer statistics
 
 To repeat this output, clone this repository and do `sbt run`.
 
-Set the target requests/second after the hammer is running:
+Set the target requests/second after the hammer is running.
+Note that the rate is limited by the akka scheduler "tick-duration",
+which is currently defined as 2 milliseconds, meaning that the
+maximum requests/second is 500 Hz.  A future version of hammer
+may work around this limitation.
 
 ```scala
 hammer.rps(0.2 *: Hz)
