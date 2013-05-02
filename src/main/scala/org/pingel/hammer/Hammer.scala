@@ -21,7 +21,7 @@ class Hammer(loadGenerator: LoadGenerator, initialRPS: Frequency.Q) {
   }
 
   import Time._
-  
+
   def logStatsEvery(period: Time.Q, windowSize: Long = 10000L) = {
     val periodFD = (period in millisecond).magnitude.toDouble.millis
     system.scheduler.schedule(0.millis, periodFD, hammerActor, PrintStatistics(windowSize))
@@ -29,8 +29,8 @@ class Hammer(loadGenerator: LoadGenerator, initialRPS: Frequency.Q) {
 
   lazy val vis = new Visualization(hammerActor, loadGenerator.name)
 
-  def connectionRatePlot(windowSize: Long = 10000L, viewWidth: Long = 120000L) = vis.connectionRatePlot(windowSize, viewWidth)
+  def connectionRatePlot(windowSize: Time.Q = 10 *: second, viewWidth: Time.Q = 1 *: minute) = vis.connectionRatePlot(windowSize, viewWidth)
 
-  def latencyPlot(windowSize: Long = 10000L, viewWidth: Long = 120000L) = vis.latencyPlot(windowSize, viewWidth)
+  def latencyPlot(windowSize: Time.Q = 10 *: second, viewWidth: Time.Q = 1 *: minute) = vis.latencyPlot(windowSize, viewWidth)
 
 }

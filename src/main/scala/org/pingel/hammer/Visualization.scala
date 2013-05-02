@@ -23,8 +23,11 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
   val d0f = collection.immutable.TreeMap[DateTime, Frequency.Q]()
   val d0t = collection.immutable.TreeMap[DateTime, Time.Q]()
 
-  def connectionRatePlot(windowSize: Long, viewWidth: Long) = {
+  def connectionRatePlot(windowSize: Time.Q, viewWidth: Time.Q) = {
 
+    val windowSizeMs = (windowSize in millisecond).magnitude.toLong
+    val viewWidthMs = (viewWidth in millisecond).magnitude.toLong
+    
     val initialData = List(
       ("open rate", d0f), ("close rate", d0f), ("target rate", d0f)
     )
@@ -32,10 +35,10 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
     val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Frequency.Q])]) => {
 
       val now = System.currentTimeMillis()
-      val viewCutoff = now - viewWidth
+      val viewCutoff = now - viewWidthMs
 
       try {
-        val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
+        val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSizeMs)).mapTo[Statistics]
         val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
         previous match {
@@ -66,23 +69,26 @@ class Visualization(hammerActorRef: ActorRef, loadGeneratorName: String) {
     )
   }
 
-  def latencyPlot(windowSize: Long, viewWidth: Long) = {
+  def latencyPlot(windowSize: Time.Q, viewWidth: Time.Q) = {
+
+    val windowSizeMs = (windowSize in millisecond).magnitude.toLong
+    val viewWidthMs = (viewWidth in millisecond).magnitude.toLong
 
     val initialData = List(("latency", d0t))
 
     val refreshFn = (previous: List[(String, collection.immutable.TreeMap[DateTime, Time.Q])]) => {
 
       val now = System.currentTimeMillis()
-      val viewCutoff = now - viewWidth
+      val viewCutoff = now - viewWidthMs
 
       try {
-        val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSize)).mapTo[Statistics]
+        val statsFuture = (hammerActorRef ? HammerProtocol.GetStatistics(windowSizeMs)).mapTo[Statistics]
 
         val stats = Await.result(statsFuture, 40.milliseconds) // TODO await
 
         previous match {
-          case latency :: Nil => List(
-            ("latency", latency._2.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.latencyAverage))
+          case (label, m) :: Nil => List(
+            (label, m.dropWhile { case (k, _) => k.getMillis < viewCutoff } + (stats.time -> stats.latencyAverage))
           )
           case _ => Nil
         }
