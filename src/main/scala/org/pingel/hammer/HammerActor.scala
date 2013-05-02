@@ -78,6 +78,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
       if (targetRps.magnitude > 0) {
         val periodFD = (1d / (targetRps in KHz).magnitude.toDouble).millis
+        log.info(s"setting schedule with periodFD = $periodFD")
         requestSchedule = Some(context.system.scheduler.schedule(
           0.millis,
           periodFD,
