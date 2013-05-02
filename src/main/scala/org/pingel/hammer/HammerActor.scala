@@ -27,6 +27,8 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
   val startTime = System.currentTimeMillis()
   var requestId = 0L
 
+  // Note: The following 3 maps will grow without bound during execution:
+  
   val startTimes = collection.mutable.Map.empty[Long, Long]
   val completionTimes = collection.mutable.Map.empty[Long, Long]
   val latencies = collection.mutable.Map.empty[Long, Long]
@@ -48,15 +50,16 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
     val completeRateAverage =
       if (denominator > 0)
-        (1000 * recentlyCompleted.size.toDouble / denominator) *: Hz
+        (1000d * recentlyCompleted.size / denominator) *: Hz
       else
         0 *: Hz
 
     val latencyAverage =
-      if (latencies.size > 0)
-        (latencies.filterKeys(recentlyCompleted.contains(_)).values.sum.toDouble / recentlyCompleted.size) *: millisecond
-      else
+      if (latencies.size > 0) {
+        (recentlyCompleted.map(latencies(_)).sum.toDouble / recentlyCompleted.size) *: millisecond
+      } else {
         0 *: millisecond
+      }
 
     Statistics(new DateTime(now), targetRps, startRateAverage, completeRateAverage, latencyAverage, requestId, startTimes.size - completionTimes.size)
   }
