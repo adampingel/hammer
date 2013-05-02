@@ -52,29 +52,30 @@ hammer.logStatsEvery(5 *: second)
 Example output:
 
 ```
-[INFO] [04/29/2013 01:03:17.175] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] 
+[INFO] [05/02/2013 11:28:55.148] [HammerSystem-akka.actor.default-dispatcher-3] [akka://HammerSystem/user/$a] 
 Hammer statistics
 
-  Current time: 1367222597174
-  Target RPS: 2 Hz
-  Average # requests started per second: 2.0 Hz
-  Average # requests completed per second: 2.0 Hz
-  Latency average: 916.55 ms
-  Current # pending requests: 2
-  Total # requests: 60
+  Current time: 2013-05-02T11:28:55.147-07:00
+  Target RPS: 100 Hz
+  Average # requests started per second: 100.0 Hz
+  Average # requests completed per second: 100.0 Hz
+  Latency average: 5.022 ms
+  Current # pending requests: 0
+  Total # requests: 2004
 ```
 
 To repeat this output, clone this repository and do `sbt run`.
 
-Set the target requests/second after the hammer is running.
-Note that the rate is limited by the akka scheduler "tick-duration",
-which is currently defined as 2 milliseconds, meaning that the
-maximum requests/second is 500 Hz.  A future version of hammer
-may work around this limitation.
+Set the target requests/second after the hammer is running:
 
 ```scala
-hammer.rps(0.2 *: Hz)
+hammer.rps(30 *: Hz)
 ```
+
+Note that the rate is limited by the akka scheduler "tick-duration",
+which is currently defined as 1 millisecond, meaning that the
+maximum requests/second is 1 KHz.  A future version of hammer
+may work around this limitation.
 
 Create a plots for
 
