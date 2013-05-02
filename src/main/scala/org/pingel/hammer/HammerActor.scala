@@ -29,9 +29,13 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
 
   // Note: The following 3 maps will grow without bound during execution:
   
-  val startTimes = collection.mutable.Map.empty[Long, Long]
-  val completionTimes = collection.mutable.Map.empty[Long, Long]
-  val latencies = collection.mutable.Map.empty[Long, Long]
+  // The keys are all the request ids, which start at 0L and decrement from there
+  // This keeps allows the natural Long sort order to put the most recent requests at the
+  // head of the sorted map
+  
+  var startTimes = collection.immutable.TreeMap.empty[Long, Long]
+  var completionTimes = collection.immutable.TreeMap.empty[Long, Long]
+  var latencies = collection.immutable.TreeMap.empty[Long, Long]
 
   def stats(windowSize: Long) = {
 
@@ -39,8 +43,8 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     val cutoff = math.max(startTime, now - windowSize)
     val denominator = now - cutoff
 
-    val numRecentlyStarted = startTimes filter { case (k, t) => t >= cutoff } size
-    val recentlyCompleted = completionTimes filter { case (k, t) => t >= cutoff } keySet
+    val numRecentlyStarted = startTimes takeWhile { case (nk, t) => t >= cutoff } size
+    val recentlyCompleted = completionTimes filter { case (nk, t) => t >= cutoff } keySet
 
     val startRateAverage =
       if (denominator > 0)
@@ -61,7 +65,7 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
         0 *: millisecond
       }
 
-    Statistics(new DateTime(now), targetRps, startRateAverage, completeRateAverage, latencyAverage, requestId, startTimes.size - completionTimes.size)
+    Statistics(new DateTime(now), targetRps, startRateAverage, completeRateAverage, latencyAverage, -requestId, startTimes.size - completionTimes.size)
   }
 
   def receive = {
@@ -88,19 +92,19 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
     case StartNextRequest() => {
 
       val myId = requestId
-      startTimes += myId -> System.currentTimeMillis()
+      startTimes = startTimes + (myId -> System.currentTimeMillis())
       lg.makeNextRequest(myId) andThen {
         case _ => self ! RequestCompleted(myId, "TODO")
       }
 
-      requestId += 1
+      requestId -= 1
     }
 
     case RequestCompleted(requestId, content) => {
       val time = System.currentTimeMillis()
-      completionTimes += requestId -> time
+      completionTimes = completionTimes + (requestId -> time)
       val ms = time - startTimes(requestId)
-      latencies += requestId -> ms
+      latencies = latencies + (requestId -> ms)
       log.debug(s"request $requestId completed after $ms")
     }
 
