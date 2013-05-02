@@ -27,15 +27,15 @@ class HammerActor(lg: LoadGenerator) extends Actor with ActorLogging {
   val startTime = System.currentTimeMillis()
   var requestId = 0L
 
-  // Note: The following 3 maps will grow without bound during execution:
-
-  // The keys are all the request ids, which start at 0L and decrement from there
+  // Note: The following 3 data structures grow without bound during execution.
+  //
+  // The keys of the maps request ids, which start at 0L and decrement from there
   // This keeps allows the natural Long sort order to put the most recent requests at the
   // head of the sorted map
 
   var startTimes = collection.immutable.TreeMap.empty[Long, Long]
-  var requestsOrderedByCompletionTime = List.empty[(Long, Long)]
   var latencies = collection.immutable.TreeMap.empty[Long, Long]
+  var requestsOrderedByCompletionTime = List.empty[(Long, Long)]
 
   def stats(windowSize: Long) = {
 
