@@ -56,9 +56,9 @@ Example output:
 Hammer statistics
 
   Current time: 2013-05-02T11:28:55.147-07:00
-  Target RPS: 100 Hz
-  Average # requests started per second: 100.0 Hz
-  Average # requests completed per second: 100.0 Hz
+  Target request start rate: 100 Hz
+  Average request start rate: 100.0 Hz
+  Average request completion rate: 100.0 Hz
   Latency average: 5.022 ms
   Current # pending requests: 0
   Total # requests: 2004
